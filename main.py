@@ -33,9 +33,24 @@ class BouncingBall():
     
     def simulate(self, t_span, x0):
         
-        sol = solve_ivp(self.in_air, t_span, x0, events=[self.contact_event], max_step=0.1)
-        return sol
-    
+        in_air = True
+        t_start, t_stop = t_span
+        t_lst = []
+        z_lst = []
+        
+        while t_start <= t_stop:
+            
+            if in_air:
+                sol = solve_ivp(self.in_air, [t_start, t_stop], x0, events=[self.contact_event], max_step=0.1)
+                in_air = False
+            else:
+                sol = solve_ivp(self.in_contact, [t_start, t_stop], x0, events=[self.contact_event], max_step=0.1) 
+                in_air = True
+                
+            t_lst.append(sol.t)
+            z_lst.append(sol.y[0,:])
+            t_start = sol.t[-1]
+   
 b = BouncingBall(1, 1, 1)
 
 sol = b.simulate([0,10], [2, 0])
