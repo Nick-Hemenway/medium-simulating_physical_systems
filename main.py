@@ -124,7 +124,7 @@ class BouncingBall():
         
         x1, x2 = y
         x1_dot = x2
-        x2_dot = -1/self.m*(self.c*x2 + self.k*x1)
+        x2_dot = -(1/self.m)*(self.c*x2 + self.k*(x1-self.r) + self.m*self.g)
         return [x1_dot, x2_dot]
     
     def simulate(self, t_span, x0, max_step=0.01):
