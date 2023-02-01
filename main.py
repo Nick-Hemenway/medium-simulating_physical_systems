@@ -1,6 +1,12 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
+import pandas as pd
+
+font_settings = {'family':'Times New Roman', 'size':12}
+line_settings = {'lw':2}
+plt.rc('font', **font_settings)
+plt.rc('lines', **line_settings)
 
 class ContactEvent():
     """Callable class that returns zero when the ball engages/disengages contact with the ground.
@@ -192,9 +198,14 @@ class BouncingBall():
         return t,z
             
    
-b = BouncingBall(1, 10e3, 1, ball_radius_cm=6)
+   
+b = BouncingBall(m=1, k=10e3, c=10, ball_radius_cm=6)
 
 t,z = b.simulate([0,8], [2, 0])
+df = pd.DataFrame({'time':t, 'z':z}).set_index('time')
+df.to_csv('sim_data.csv')
 
 fig, ax = plt.subplots()
 ax.plot(t,z)
+ax.set_xlabel('Time [s]')
+ax.set_ylabel('Height [m]')
