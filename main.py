@@ -109,7 +109,7 @@ class BouncingBall():
             vector containing the ball's state derivatives
         """
         
-        x1, x2 = x
+        x1, x2 = x #unpack the current state of the ball
         return [x2, -self.g]
     
     def in_contact(self,t,x):
@@ -128,7 +128,7 @@ class BouncingBall():
             vector containing the ball's state derivatives
         """
         
-        x1, x2 = x
+        x1, x2 = x #unpack the current state of the ball
         x1_dot = x2
         x2_dot = -(self.b/self.m)*x2 + (self.k/self.m)*(self.r - x1) - self.g
         return [x1_dot, x2_dot]
