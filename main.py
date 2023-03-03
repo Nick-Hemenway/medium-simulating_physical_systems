@@ -66,7 +66,7 @@ class BouncingBall():
     
     g = 9.81 #gravity constant [m/s^2]
     
-    def __init__(self, m, k, c, ball_radius_cm):
+    def __init__(self, m, k, b, ball_radius_cm):
         """
         Parameters
         ----------
@@ -83,7 +83,7 @@ class BouncingBall():
         self.r = ball_radius_cm/100 #radius in meters
         self.m = m
         self.k = k
-        self.c = c
+        self.b = b
         
         #create event functions for the ball engaging and disengaging contact
         #note that when coming into contact with the ground, the direction of the
@@ -130,7 +130,7 @@ class BouncingBall():
         
         x1, x2 = x
         x1_dot = x2
-        x2_dot = -(1/self.m)*(self.c*x2 + self.k*(x1-self.r) + self.m*self.g)
+        x2_dot = -(1/self.m)*(self.b*x2 + self.k*(x1-self.r) + self.m*self.g)
         return [x1_dot, x2_dot]
     
     def simulate(self, t_span, x0, max_step=0.01):
@@ -197,7 +197,7 @@ class BouncingBall():
         
         return t,x
             
-b = BouncingBall(m=1, k=10e3, c=10, ball_radius_cm=6)
+b = BouncingBall(m=1, k=10e3, b=10, ball_radius_cm=6)
 
 t,x = b.simulate([0,8], [2, 0])
 df = pd.DataFrame({'time':t, 'x':x}).set_index('time')
