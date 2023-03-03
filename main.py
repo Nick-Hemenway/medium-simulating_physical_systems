@@ -28,7 +28,7 @@ class ContactEvent():
         self.direction = direction
         self.terminal = True #terminal is True so that simulation will end on contact event
     
-    def __call__(self,t,y):
+    def __call__(self,t,x):
         """Computes the height of the ball above being in contact
         
         Notes
@@ -40,7 +40,7 @@ class ContactEvent():
         ----------
         t : float
             time in the simulation
-        y : array-like
+        x : array-like
             vector of ball's state variables (height and velocity)
 
         Returns
@@ -49,7 +49,7 @@ class ContactEvent():
             height above being in contact
         """
         #unpack height and velocity of ball
-        x1, x2 = y
+        x1, x2 = x
         return x1 - self.r
 
 class BouncingBall():
@@ -57,9 +57,9 @@ class BouncingBall():
 
     Methods
     -------
-    in_air(t, y) : Computes the ball's state derivatives while in air
+    in_air(t, x) : Computes the ball's state derivatives while in air
     
-    in_contact(t, y) : Computes the ball's state derivatives while in contact
+    in_contact(t, x) : Computes the ball's state derivatives while in contact
     
     simulate(t_span, x0, max_step) : Simulates the ball bouncing
     """
@@ -93,14 +93,14 @@ class BouncingBall():
         self.hitting_ground = ContactEvent(self.r, direction=-1)
         self.leaving_ground = ContactEvent(self.r, direction=1)
         
-    def in_air(self,t,y):
+    def in_air(self,t,x):
         """computes the ball's state derivatives while in air
 
         Parameters
         ----------
         t : float
             simulation time
-        y : array-like
+        x : array-like
             vector containing the ball's state variables (height and velocity)
 
         Returns
@@ -109,17 +109,17 @@ class BouncingBall():
             vector containing the ball's state derivatives
         """
         
-        x1, x2 = y
+        x1, x2 = x
         return [x2, -self.g]
     
-    def in_contact(self,t,y):
+    def in_contact(self,t,x):
         """computes the ball's state derivatives while in contact with the ground
 
         Parameters
         ----------
         t : float
             simulation time
-        y : array-like
+        x : array-like
             vector containing the ball's state variables (height and velocity)
 
         Returns
@@ -128,7 +128,7 @@ class BouncingBall():
             vector containing the ball's state derivatives
         """
         
-        x1, x2 = y
+        x1, x2 = x
         x1_dot = x2
         x2_dot = -(1/self.m)*(self.c*x2 + self.k*(x1-self.r) + self.m*self.g)
         return [x1_dot, x2_dot]
@@ -158,7 +158,7 @@ class BouncingBall():
         
         #create lists with initial conditions that we can append the piecewise solutions to
         t_lst = [t_start]
-        z_lst = [x0[0]]
+        x_lst = [x0[0]]
         
         #loop until we reach the desired stopping time
         while t_start < t_stop:
@@ -180,7 +180,7 @@ class BouncingBall():
             #data point of each simulation. This is also why we created our solution lists above with the initial conditions already
             #in them
             t_lst.append(sol.t[1::])
-            z_lst.append(sol.y[0,1::])
+            x_lst.append(sol.y[0,1::])
             
             #set the starting time and initial conditions to the stopping time and end condtions of the previous loop
             t_start = sol.t[-1]
@@ -193,19 +193,17 @@ class BouncingBall():
 
         #concatenate all of the solutions into a single numpy array
         t = np.hstack(t_lst)
-        z = np.hstack(z_lst)
+        x = np.hstack(x_lst)
         
-        return t,z
+        return t,x
             
-   
-   
 b = BouncingBall(m=1, k=10e3, c=10, ball_radius_cm=6)
 
-t,z = b.simulate([0,8], [2, 0])
-df = pd.DataFrame({'time':t, 'z':z}).set_index('time')
+t,x = b.simulate([0,8], [2, 0])
+df = pd.DataFrame({'time':t, 'x':x}).set_index('time')
 df.to_csv('sim_data.csv')
 
 fig, ax = plt.subplots()
-ax.plot(t,z)
+ax.plot(t,x)
 ax.set_xlabel('Time [s]')
 ax.set_ylabel('Height [m]')
