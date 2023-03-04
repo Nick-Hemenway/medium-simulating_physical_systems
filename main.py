@@ -64,9 +64,7 @@ class BouncingBall():
     simulate(t_span, x0, max_step) : Simulates the ball bouncing
     """
     
-    g = 9.81 #gravity constant [m/s^2]
-    
-    def __init__(self, m, k, b, ball_radius_cm):
+    def __init__(self, m, k, b, ball_radius_cm, gravity=None):
         """
         Parameters
         ----------
@@ -78,12 +76,20 @@ class BouncingBall():
             ball viscous damping coef. in N/(m/s)
         ball_radius_cm : float
             ball radius in centimeters
+        gravity : float, optional
+            acceleration of gravity in m/s^2. Defaults to 9.81 m/s^2 if None given.
         """
         
         self.r = ball_radius_cm/100 #radius in meters
         self.m = m
         self.k = k
         self.b = b
+        
+        if gravity is None:
+            self.g = 9.81 #m/s^2
+        else:
+            self.g = gravity #m/s^2
+            
         
         #create event functions for the ball engaging and disengaging contact
         #note that when coming into contact with the ground, the direction of the
