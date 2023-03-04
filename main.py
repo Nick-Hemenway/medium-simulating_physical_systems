@@ -3,6 +3,7 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import pandas as pd
 
+#set default plotting settings to personal preference
 font_settings = {'family':'Times New Roman', 'size':12}
 line_settings = {'lw':2}
 plt.rc('font', **font_settings)
@@ -89,7 +90,7 @@ class BouncingBall():
             self.g = 9.81 #m/s^2
         else:
             self.g = gravity #m/s^2
-            
+
         
         #create event functions for the ball engaging and disengaging contact
         #note that when coming into contact with the ground, the direction of the
