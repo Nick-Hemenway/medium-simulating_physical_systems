@@ -228,3 +228,5 @@ fig, ax = plt.subplots()
 ax.plot(t,x)
 ax.set_xlabel('Time [s]')
 ax.set_ylabel('Height [m]')
+
+fig.savefig('bouncing_ball.png')
