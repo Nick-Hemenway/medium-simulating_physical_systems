@@ -10,7 +10,8 @@ plt.rc('font', **font_settings)
 plt.rc('lines', **line_settings)
 
 class ContactEvent():
-    """Callable class that returns zero when the ball engages/disengages contact with the ground.
+    """Callable class that returns zero when the ball engages/disengages
+    contact with the ground.
     """
     
     def __init__(self, r, direction=0):
@@ -78,7 +79,8 @@ class BouncingBall():
         ball_radius_cm : float
             ball radius in centimeters
         gravity : float, optional
-            acceleration of gravity in m/s^2. Defaults to 9.81 m/s^2 if None given.
+            acceleration of gravity in m/s^2. Defaults to 9.81 m/s^2 
+            if None given.
         """
         
         self.r = ball_radius_cm/100 #radius in meters
@@ -92,11 +94,12 @@ class BouncingBall():
             self.g = gravity #m/s^2
 
         
-        #create event functions for the ball engaging and disengaging contact
-        #note that when coming into contact with the ground, the direction of the
-        #zero crossing will be negative (height abve the ground is transitioning to negative)
-        #whereas when the ball leaves the ground the zero crossing will be positive
-        #(height above the ground is transitioning from negative to positive)
+        # create event functions for the ball engaging and disengaging contact
+        # note that when coming into contact with the ground, the direction of the
+        # zero crossing will be negative (height abve the ground is transitioning 
+        # to negative) whereas when the ball leaves the ground the zero crossing 
+        # will be positive (height above the ground is transitioning from negative
+        # to positive)
         self.hitting_ground = ContactEvent(self.r, direction=-1)
         self.leaving_ground = ContactEvent(self.r, direction=1)
         
@@ -170,31 +173,42 @@ class BouncingBall():
         #loop until we reach the desired stopping time
         while t_start < t_stop:
             
-            # Here we simulate the ball forward in time using either the air or contact model.
-            # Each of these subroutines will terminate when either 1) the final desired simulation stop time is reached,
-            # or 2) when a contact event is triggered. At a high level, we are simulating our system forward in time using 
-            # the relevant physics model (that depends on the state of the system). The simulation will alternate
-            # between the "in_air" model and "in_contact" model switching between the two each time a contact event is triggered
+            """
+            Here we simulate the ball forward in time using either the air 
+            or contact model. Each of these subroutines will terminate when 
+            either 1) the final desired simulation stop time is reached,
+            or 2) when a contact event is triggered. At a high level, we are
+            simulating our system forward in time using the relevant physics 
+            model (that depends on the state of the system). The simulation 
+            will alternate between the "in_air" model and "in_contact" model 
+            switching between the two each time a contact event is triggered
+            """
 
             if in_air:
-                sol = solve_ivp(self.in_air, [t_start, t_stop], x0, events=[self.hitting_ground], max_step=max_step)
+                sol = solve_ivp(self.in_air, [t_start, t_stop], x0, 
+                                events=[self.hitting_ground], max_step=max_step)
                 
             else:
-                sol = solve_ivp(self.in_contact, [t_start, t_stop], x0, events=[self.leaving_ground], max_step=max_step) 
+                sol = solve_ivp(self.in_contact, [t_start, t_stop], x0, 
+                                events=[self.leaving_ground], max_step=max_step) 
                 
-            #append solution and time array to list of solutions. Note that the starting time of each solution
-            #is the stopping time of the previous solution. To avoid having duplicate time points, we will not include the first
-            #data point of each simulation. This is also why we created our solution lists above with the initial conditions already
-            #in them
+            # append solution and time array to list of solutions. 
+            # Note that the starting time of each solution
+            # is the stopping time of the previous solution. 
+            # To avoid having duplicate time points, we will not include the first
+            #data point of each simulation. This is also why we created our 
+            # solution lists above with the initial conditions already in them
             t_lst.append(sol.t[1::])
             x_lst.append(sol.y[0,1::])
             
-            #set the starting time and initial conditions to the stopping time and end condtions of the previous loop
+            #set the starting time and initial conditions to the stopping 
+            #time and end condtions of the previous loop
             t_start = sol.t[-1]
             x0 = sol.y[:,-1].flatten()
             
-            #if we haven't reached the stopping time yet in the current loop, we must be switching between being in the
-            #the air and being in contact
+            #if we haven't reached the stopping time yet in the current 
+            #loop, we must be switching between being in the air and
+            #being in contact
             if t_start < t_stop:
                 in_air = not in_air
 
